@@ -3,6 +3,10 @@ import numpy as np
 import math as mt
 import scipy.stats as st
 from scipy.stats import chi2_contingency
+import matplotlib.pyplot as plt
+from sklearn.model_selection import train_test_split
+from sklearn.linear_model import LinearRegression
+from sklearn.metrics import mean_squared_error
 import os
 
 
@@ -216,10 +220,82 @@ def chi_cuadrada(df):
     else:
         print("No hay evidencia suficiente para rechazar la hipótesis nula.")
 
+def grafica_de_dispercion(df):
+    # creamos un array con los valores de x y y
+    x = df.iloc[:, 1].values
+    y = df.iloc[:, 10].values
+
+    print("Valores de x: ", x)
+    print("Valores de y: ", y)
+
+    # dividimos los datos en entrenamiento y prueba
+    x_train, x_test, y_train, y_test = train_test_split(x, y, test_size=0.2)
+
+    # creamos el modelo de regresión lineal
+    reg = LinearRegression()
+
+    # entrenamos el modelo
+    reg.fit(x_train.reshape(-1, 1), y_train)
+
+    # hacemos las predicciones en el conjunto de prueba
+    y_pred = reg.predict(x_test.reshape(-1, 1))
+
+    # comparamos los valores reales con los valores predichos
+    df = pd.DataFrame({'Actual': y_test, 'Predicción': y_pred})
+    print(df)
+
+    # graficamos los datos de prueba
+    plt.scatter(x_test, y_test, color='blue')
+    # graficamos la recta de regresión
+    plt.plot(x_test, y_pred, color='red', linewidth=2)
+    plt.title('Regresión lineal simple')
+    plt.xlabel('Cases abiertos')
+    plt.ylabel('Porcentaje de skins rojas')
+    plt.show()
+
+    # calculamos el error cuadrático medio (MSE)
+    print('Error cuadrático medio: %.2f' % mean_squared_error(y_test, y_pred))
+
+    # calculamos el coeficiente de determinación (r2)
+    print('Coeficiente de determinación: %.2f' % reg.score(x_test.reshape(-1, 1), y_test))
+
+    # skins azules
+    x = df.iloc[:, 2].values
+    y = df.iloc[:, 11].values
+
+    print("Valores de x: ", x)
+    print("Valores de y: ", y)
+
+    # dividimos los datos en entrenamiento y prueba
+    x_train, x_test, y_train, y_test = train_test_split(x, y, test_size=0.2)
+
+    # creamos el modelo de regresión lineal
+
+    reg = LinearRegression()
+    
+    # entrenamos el modelo
+    reg.fit(x_train.reshape(-1, 1), y_train)
+
+    # hacemos las predicciones en el conjunto de prueba
+    y_pred = reg.predict(x_test.reshape(-1, 1))
+
+    # comparamos los valores reales con los valores predichos
+    df = pd.DataFrame({'Actual': y_test, 'Predicción': y_pred})
+    print(df)
+
+    # graficamos los datos de prueba
+    plt.scatter(x_test, y_test, color='blue')
+    # graficamos la recta de regresión
+    plt.plot(x_test, y_pred, color='red', linewidth=2)
+    plt.title('Regresión lineal simple')
+    plt.xlabel('Cases abiertos')
+    plt.ylabel('Porcentaje de skins azules')
+    plt.show()
+    
 
 ## MENU ##
 
-def menu():
+def menu(x=0):
     
     print("_"*100, "\n")
     print("__________MENU__________")
@@ -236,6 +312,12 @@ def menu():
     print("11. Varianza por columna")
     print("12. Varianza por fila")
     print("13. Hipotesis (chi cuadrado)")
+
+    if x == 1:
+        print("_"*100, "\n")
+        print("__________MENU 2__________") 
+        print("14.Grafica de dispersión")
+
     print("0. Salir")
     opcion = int(input("Introduce una opción: "))
     # clear the screen 
@@ -335,6 +417,17 @@ while True:
         # pause the screen until the user press a key
         os.system('pause')
         
+    elif opcion == 14:
+        print("Variable dependiente: Cases abiertos")
+        print("Variable independiente: Porcentaje de skins rojas")
+
+        # pause the screen until the user press a key
+        os.system('pause')
+
+        grafica_de_dispercion(df)
+
+        
+
     elif opcion == 0:
         print("Saliendo...")
         break
