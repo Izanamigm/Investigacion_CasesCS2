@@ -221,81 +221,37 @@ def chi_cuadrada(df):
         print("No hay evidencia suficiente para rechazar la hipótesis nula.")
 
 def grafica_de_dispercion(df):
-    # creamos un array con los valores de x y y
-    x = df.iloc[:, 1].values
-    y = df.iloc[:, 10].values
+   
+    # porcentaje de skins rojas
+    porcentaje = df.iloc[:, 9]
+    # cases abiertos
+    Totales = df.iloc[:, 1]
 
-    print("Valores de x: ", x)
-    print("Valores de y: ", y)
+    model = LinearRegression()
 
-    # dividimos los datos en entrenamiento y prueba
-    x_train, x_test, y_train, y_test = train_test_split(x, y, test_size=0.2)
+    # reshape para tener una matriz de dos columnas
+    porcentaje = np.array(porcentaje).reshape(-1, 1)
+    Totales = np.array(Totales).reshape(-1, 1)
 
-    # creamos el modelo de regresión lineal
-    reg = LinearRegression()
+    model.fit(porcentaje, Totales)
 
-    # entrenamos el modelo
-    reg.fit(x_train.reshape(-1, 1), y_train)
+    # prediccion
 
-    # hacemos las predicciones en el conjunto de prueba
-    y_pred = reg.predict(x_test.reshape(-1, 1))
+    y_pred = model.predict(porcentaje)
 
-    # comparamos los valores reales con los valores predichos
-    df = pd.DataFrame({'Actual': y_test, 'Predicción': y_pred})
-    print(df)
-
-    # graficamos los datos de prueba
-    plt.scatter(x_test, y_test, color='blue')
-    # graficamos la recta de regresión
-    plt.plot(x_test, y_pred, color='red', linewidth=2)
-    plt.title('Regresión lineal simple')
-    plt.xlabel('Cases abiertos')
-    plt.ylabel('Porcentaje de skins rojas')
-    plt.show()
-
-    # calculamos el error cuadrático medio (MSE)
-    print('Error cuadrático medio: %.2f' % mean_squared_error(y_test, y_pred))
-
-    # calculamos el coeficiente de determinación (r2)
-    print('Coeficiente de determinación: %.2f' % reg.score(x_test.reshape(-1, 1), y_test))
-
-    # skins azules
-    x = df.iloc[:, 2].values
-    y = df.iloc[:, 11].values
-
-    print("Valores de x: ", x)
-    print("Valores de y: ", y)
-
-    # dividimos los datos en entrenamiento y prueba
-    x_train, x_test, y_train, y_test = train_test_split(x, y, test_size=0.2)
-
-    # creamos el modelo de regresión lineal
-
-    reg = LinearRegression()
-    
-    # entrenamos el modelo
-    reg.fit(x_train.reshape(-1, 1), y_train)
-
-    # hacemos las predicciones en el conjunto de prueba
-    y_pred = reg.predict(x_test.reshape(-1, 1))
-
-    # comparamos los valores reales con los valores predichos
-    df = pd.DataFrame({'Actual': y_test, 'Predicción': y_pred})
-    print(df)
-
-    # graficamos los datos de prueba
-    plt.scatter(x_test, y_test, color='blue')
-    # graficamos la recta de regresión
-    plt.plot(x_test, y_pred, color='red', linewidth=2)
-    plt.title('Regresión lineal simple')
-    plt.xlabel('Cases abiertos')
-    plt.ylabel('Porcentaje de skins azules')
-    plt.show()
+    # grafica de dispersion
+    plt.scatter(porcentaje, Totales, color='red', label='Datos')
+    plt.plot(porcentaje, y_pred, color='blue', linewidth=3, label='Regresión lineal')
+    plt.title('Regresión lineal')
+    plt.xlabel('Porcentaje de skins rojas')
+    plt.ylabel('Cases abiertos')
+    plt.legend()
+    plt.show()  
     
 
 ## MENU ##
 
-def menu(x=0):
+def menu():
     
     print("_"*100, "\n")
     print("__________MENU__________")
@@ -312,14 +268,16 @@ def menu(x=0):
     print("11. Varianza por columna")
     print("12. Varianza por fila")
     print("13. Hipotesis (chi cuadrado)")
-
-    if x == 1:
-        print("_"*100, "\n")
-        print("__________MENU 2__________") 
-        print("14.Grafica de dispersión")
-
+    print("14. Grafica de dispercion")
+    print("15. Conjuntos de entrenamiento y prueba")
+    print("16. Regresión lineal")
+    print("17. Prediccion y evaluacion del modelo")
+    print("18. Grafica de dispercion con regresion lineal")
+    print("19. Interpretacion de resultados")
     print("0. Salir")
-    opcion = int(input("Introduce una opción: "))
+    print("_"*100, "\n")
+
+    opcion = int(input("Opción: "))
     # clear the screen 
     os.system('cls')
     return opcion
@@ -426,8 +384,104 @@ while True:
 
         grafica_de_dispercion(df)
 
+    elif opcion == 15:
         
+        train_df, test_df = train_test_split(df, test_size=0.2, random_state=42)
+        print("Conjunto de entrenamiento")
+        print(train_df)
+        print("Conjunto de prueba")
+        print(test_df)
 
+        # pause the screen until the user press a key
+        os.system('pause')
+
+    elif opcion == 16:
+        print("Variable dependiente: Cases abiertos")
+        print("Variable independiente: Porcentaje de skins rojas")
+
+        # pause the screen until the user press a key
+        os.system('pause')
+
+        train_df, test_df = train_test_split(df, test_size=0.2, random_state=42)
+        X_train = train_df.iloc[:, 9].values.reshape(-1, 1)
+        y_train = train_df.iloc[:, 1].values.reshape(-1, 1)
+        X_test = test_df.iloc[:, 9].values.reshape(-1, 1)
+        y_test = test_df.iloc[:, 1].values.reshape(-1, 1)
+        model = LinearRegression()
+        model.fit(X_train, y_train)
+        b0 = model.intercept_
+        b1 = model.coef_
+
+
+        print(f'Ecuación de regresión: Y = {b0[0]:.4f} + {b1[0][0]:.4f} * x1')
+
+        # pause the screen until the user press a key
+        os.system('pause')
+
+    elif opcion == 17:
+        print("Variable dependiente: Cases abiertos")
+        print("Variable independiente: Porcentaje de skins rojas")
+
+        # pause the screen until the user press a key
+        os.system('pause')
+
+        train_df, test_df = train_test_split(df, test_size=0.2, random_state=42)
+        X_train = train_df.iloc[:, 9].values.reshape(-1, 1)
+        y_train = train_df.iloc[:, 1].values.reshape(-1, 1)
+        X_test = test_df.iloc[:, 9].values.reshape(-1, 1)
+        y_test = test_df.iloc[:, 1].values.reshape(-1, 1)
+        model = LinearRegression()
+        model.fit(X_train, y_train)
+        y_pred = model.predict(X_test)
+        print("Predicción")
+        print(y_pred)
+        print("Evaluación del modelo")
+        print(f'Error cuadrático medio: {mean_squared_error(y_test, y_pred):.2f}')
+
+        # pause the screen until the user press a key
+        os.system('pause')
+
+    elif opcion == 18:
+        print("Variable dependiente: Cases abiertos")
+        print("Variable independiente: Porcentaje de skins rojas")
+
+        # pause the screen until the user press a key
+        os.system('pause')
+
+        train_df, test_df = train_test_split(df, test_size=0.2, random_state=42)
+        X_train = train_df.iloc[:, 9].values.reshape(-1, 1)
+        y_train = train_df.iloc[:, 1].values.reshape(-1, 1)
+        X_test = test_df.iloc[:, 9].values.reshape(-1, 1)
+        y_test = test_df.iloc[:, 1].values.reshape(-1, 1)
+        model = LinearRegression()
+        model.fit(X_train, y_train)
+        y_pred = model.predict(X_test)
+
+        # grafica de dispersion
+        plt.scatter(X_test, y_test, color='red', label='Datos')
+        plt.plot(X_test, y_pred, color='blue', linewidth=3, label='Regresión lineal')
+        plt.title('Regresión lineal')
+        plt.xlabel('Porcentaje de skins rojas')
+        plt.ylabel('Cases abiertos')
+        plt.legend()
+        plt.show()
+
+        # pause the screen until the user press a key
+        os.system('pause')
+
+    elif opcion == 19:
+
+        print("Variable dependiente: Cases abiertos")
+        print("Variable independiente: Porcentaje de skins rojas")
+        print("La ecuación de regresión es: Y = 0.55 + 0.01 * x1")
+        print("Interpretación de los coeficientes:")
+        print("b0 = 0.55: Es el valor promedio de cases abiertos cuando el porcentaje de skins rojas es igual a 0%")
+        print("b1 = 0.01: Por cada incremento de 1'%' en el porcentaje de skins rojas, el número de cases abiertos aumenta en 0.01")
+        print("Interpretación del coeficiente de determinación:")
+        print("R2 = 0.0001: El modelo explica el 0.01'%' de la variabilidad de la variable dependiente")
+
+        # pause the screen until the user press a key
+        os.system('pause')
     elif opcion == 0:
         print("Saliendo...")
         break
