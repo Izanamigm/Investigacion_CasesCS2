@@ -376,6 +376,7 @@ while True:
         os.system('pause')
         
     elif opcion == 14:
+        print("Grafica de dispercion")
         print("Variable dependiente: Cases abiertos")
         print("Variable independiente: Porcentaje de skins rojas")
 
